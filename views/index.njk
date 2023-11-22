@@ -1,9 +1,10 @@
-<html>
-	<title>Test nunjucks</title>
+{% extends "layout.njk" %}
+{% block title %}Travel reservation | Homepage{% endblock title %}
 
+{% block main %}
 
-	<body>
-	This is my test nunjucks code
-	Title {{title}}
-	</body>
-</html>
+<div>
+	<b>Home page</b>
+</div>
+
+{% endblock main %}

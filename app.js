@@ -6,10 +6,9 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var onceperreq = require('./routes/onceperreq');
 
 var nunjucks = require('nunjucks');
-
-
 
 var app = express();
 
@@ -23,6 +22,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// this a filter middleware 
+app.use(function(req,res,next){
+  console.log("Hello world this is suppose to be a global middleware");
+  next();
+})
+// middlware for routing 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
@@ -47,7 +52,5 @@ nunjucks.configure('views', {
   autoescape: true,
   express: app
 })
-
-
 
 module.exports = app;

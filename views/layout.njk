@@ -1,1 +1,14 @@
-{}
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <title>
+    {% block title %}
+    {{ title |default:"Untitled Page" }}
+    {% endblock title %}
+  </title>
+
+  <body>
+    {% block main %}
+    {% endblock main %}
+  </body>
+</html>
