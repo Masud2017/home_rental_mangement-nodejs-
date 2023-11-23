@@ -7,6 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('home-rental-mangement:server');
 var http = require('http');
+var Sequelize = require('../config/sequelize');
+var User = require('../models/User');
+var Address = require('../models/Adress');
+var Role = require('../models/Role');
 
 /**
  * Get port from environment and store in Express.
@@ -25,9 +29,34 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+
+// modified code
+const initApp = async () => {
+  console.log("Testing the database connection..");
+
+  // Test the connection.
+  try {
+    await Sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+
+    // sync models
+    User.sync({ alter: true });
+    Address.sync({alter: true});
+    Role.sync({alter : true});
+    // sync models section ended
+
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  } catch (error) {
+    console.error("Unable to connect to the database:", error.original);
+  }
+};
+
+initApp();
 
 /**
  * Normalize a port into a number, string, or false.

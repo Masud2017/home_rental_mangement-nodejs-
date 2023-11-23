@@ -6,9 +6,14 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var onceperreq = require('./routes/onceperreq');
+var authRouter = require('./routes/auth');
+var registerRouter = require('./routes/register');
+
+var viewsGroup = require('./routes/views_router');
 
 var nunjucks = require('nunjucks');
+var session = require('express-session');
+const dotenv = require('dotenv').config();
 
 var app = express();
 
@@ -21,6 +26,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// console.log((process.env.SESSION_SECRET) ? process.env.SESSION_SECRET : false);
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}));
+
 
 // this a filter middleware 
 app.use(function(req,res,next){
@@ -30,6 +43,10 @@ app.use(function(req,res,next){
 // middlware for routing 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/auth',authRouter);
+app.use('/register',registerRouter);
+app.get('/login',viewsGroup.login);
+app.get('/singup',viewsGroup.signup);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -48,9 +65,11 @@ app.use(function(err, req, res, next) {
 });
 
 // configuration for nunjucks
-nunjucks.configure('views', {
+nunjucks.configure(['views','views/layout'], {
   autoescape: true,
   express: app
 })
+
+
 
 module.exports = app;

@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
+var User = require('../models/User');
 
-/* GET home page. */
+/**
+ * POST
+ * signup
+ */
 router.get('/', function(req, res, next) {
-  req.session.user = {"name":"masud karim"};
-  console.log(req.session.user);
-  // req.session.destroy(function() {
-  //   console.log("Destroying");
-  // })
+  request_body = req.body;
+  request_body.name;
   res.render('index', { title: 'Express' });
 });
 
