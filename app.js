@@ -13,6 +13,7 @@ var viewsGroup = require('./routes/views_router');
 
 var nunjucks = require('nunjucks');
 var session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 const dotenv = require('dotenv').config();
 
 var app = express();
@@ -27,11 +28,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // console.log((process.env.SESSION_SECRET) ? process.env.SESSION_SECRET : false);
+const options = {
+	host: 'localhost',
+	port: 3306,
+	user: 'root',
+	password: '',
+	database: process.env.DB_NAME
+};
+const sessionStore = new MySQLStore(options);
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
-  cookie: { secure: true }
+  cookie: { secure: true, 
+    maxAge: 24 * 60 * 60 * 1000 * 7, //seven days 
+  },
+  store: sessionStore,
 }));
 
 

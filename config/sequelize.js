@@ -1,10 +1,11 @@
 const Sequelize = require("sequelize");
+const dotenv = require('dotenv').config();
 
 /**
  * Create a Sequelize instance. This can be done by passing
  * the connection parameters separately to the Sequelize constructor.
  */
-const sequelize = new Sequelize('test', 'root', '', {
+const sequelize = new Sequelize(process.env.DB_NAME, 'root', '', {
    host: "127.0.0.1",
    dialect: "mysql",
    

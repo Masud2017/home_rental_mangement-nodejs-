@@ -3,7 +3,14 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  console.log(req.session);
+  if (req.session.user) {
+    console.log(user);
+    res.send("User is authenticated");
+  } else {
+    res.send('respond with a resource');
+  }
+
 });
 
 module.exports = router;
