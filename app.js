@@ -1,20 +1,22 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var registerRouter = require('./routes/register');
-
 var viewsGroup = require('./routes/views_router');
+
+// user specific middlewares
+var AuthGuard = require('./middlewares/AuthGuard');
 
 var nunjucks = require('nunjucks');
 var session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const dotenv = require('dotenv').config();
+var uid = require('uid-safe');
 
 var app = express();
 
@@ -25,9 +27,10 @@ app.set('view engine', 'njk');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // console.log((process.env.SESSION_SECRET) ? process.env.SESSION_SECRET : false);
+
+
 const options = {
 	host: 'localhost',
 	port: 3306,
@@ -36,14 +39,19 @@ const options = {
 	database: process.env.DB_NAME
 };
 const sessionStore = new MySQLStore(options);
+app.set('trust proxy', 1) // trust first proxy
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  // saveUninitialized: true,
   cookie: { secure: true, 
     maxAge: 24 * 60 * 60 * 1000 * 7, //seven days 
   },
+    sameSite:"lex",
+    secure: false,
   store: sessionStore,
+  // key: 'user_sid',
 }));
 
 
@@ -59,6 +67,7 @@ app.use('/auth',authRouter);
 app.use('/register',registerRouter);
 app.get('/login',viewsGroup.login);
 app.get('/singup',viewsGroup.signup);
+app.get('/dashboard',AuthGuard,viewsGroup.dashboard);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

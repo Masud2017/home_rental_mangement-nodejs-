@@ -4,7 +4,7 @@ var router = express.Router();
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   console.log(req.session);
-  if (req.session.user) {
+  if (req.session.authorized) {
     console.log(user);
     res.send("User is authenticated");
   } else {
